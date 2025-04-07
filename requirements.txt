@@ -12,7 +12,7 @@ imblearn  # Para manejar datasets desbalanceados (opcional)
 opencv-python  # Si usas imágenes en el procesamiento
 
 # --- Deep Learning (Si usas redes neuronales) ---
-tensorflow
+tensorflow==2.14.0
 torch 
 torchvision 
 torchaudio  # Alternativa con PyTorch

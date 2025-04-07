@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconocimiento de Dígitos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>¡Dibuja un número!</h1>
+        <div class="canvas-container">
+            <canvas id="canvas" width="280" height="280"></canvas>
+        </div>
+        <div>
+            <button id="clearButton">Borrar</button>
+            <button id="submitButton">Enviar</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Configurar el color de trazo (blanco) y el grosor
+        ctx.strokeStyle = "white"; // Dibujo en blanco
+        ctx.lineWidth = 15; // Grosor de la línea
+
+        // Variables para el trazado
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        // Iniciar el dibujo
+        canvas.addEventListener("mousedown", (e) => {
+            drawing = true;
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        });
+
+        // Parar el dibujo
+        canvas.addEventListener("mouseup", () => {
+            drawing = false;
+        });
+
+        // Traza la línea
+        canvas.addEventListener("mousemove", (e) => {
+            if (!drawing) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        });
+
+        // Limpiar el canvas
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Enviar imagen al servidor
+        function sendImage() {
+            const image = canvas.toDataURL("image/png");
+
+            // Usamos Fetch API para enviar la imagen al servidor
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: image })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Predicción: ${data.prediction}`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
