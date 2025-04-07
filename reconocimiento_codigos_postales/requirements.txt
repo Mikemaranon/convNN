@@ -1,0 +1,36 @@
+# --- Manejo de Datos ---
+pandas
+numpy
+
+# --- Visualización ---
+matplotlib
+seaborn
+
+# --- Preprocesamiento de Datos ---
+scikit-learn
+imblearn  # Para manejar datasets desbalanceados (opcional)
+opencv-python  # Si usas imágenes en el procesamiento
+
+# --- Deep Learning (Si usas redes neuronales) ---
+tensorflow
+torch 
+torchvision 
+torchaudio  # Alternativa con PyTorch
+
+# --- Modelado Clásico (Si pruebas modelos tradicionales) ---
+xgboost
+lightgbm
+catboost
+
+# --- Análisis y Evaluación ---
+scipy
+statsmodels
+
+# --- Despliegue ---
+flask
+fastapi 
+uvicorn  # Para ejecutar FastAPI
+
+# --- Otras Utilidades ---
+tqdm  # Barras de progreso
+joblib  # Para guardar modelos entrenados
