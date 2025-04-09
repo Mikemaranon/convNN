@@ -10,7 +10,7 @@ import cv2
 app = Flask(__name__)
 
 # Cargar el modelo entrenado
-model = load_model('number_model.h5')
+model = load_model('2_Deployment/number_model.h5')
 
 # Ruta principal para la interfaz
 @app.route('/')

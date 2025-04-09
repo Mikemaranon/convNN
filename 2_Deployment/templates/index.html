@@ -20,66 +20,68 @@
     </div>
 
     <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-
-        // Configurar el color de trazo (blanco) y el grosor
-        ctx.strokeStyle = "white"; // Dibujo en blanco
-        ctx.lineWidth = 15; // Grosor de la línea
-
-        // Variables para el trazado
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
         let drawing = false;
-        let lastX = 0;
-        let lastY = 0;
 
-        // Iniciar el dibujo
-        canvas.addEventListener("mousedown", (e) => {
+        canvas.addEventListener('mousedown', (e) => {
             drawing = true;
-            lastX = e.offsetX;
-            lastY = e.offsetY;
+            context.beginPath();
+            context.moveTo(e.offsetX, e.offsetY);
         });
 
-        // Parar el dibujo
-        canvas.addEventListener("mouseup", () => {
+        canvas.addEventListener('mousemove', (e) => {
+            if (drawing) {
+                context.lineTo(e.offsetX, e.offsetY);
+                context.stroke();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
             drawing = false;
         });
 
-        // Traza la línea
-        canvas.addEventListener("mousemove", (e) => {
-            if (!drawing) return;
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
-            lastX = e.offsetX;
-            lastY = e.offsetY;
+        document.getElementById('clearButton').addEventListener('click', () => {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('result').innerHTML = '';
         });
 
-        // Limpiar el canvas
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        document.getElementById('submitButton').addEventListener('click', () => {
+            const ctx = canvas.getContext('2d');
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
 
-        // Enviar imagen al servidor
-        function sendImage() {
-            const image = canvas.toDataURL("image/png");
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = 255 - data[i];       // R
+                data[i + 1] = 255 - data[i + 1]; // G
+                data[i + 2] = 255 - data[i + 2]; // B
+                // Alpha queda igual
+            }
 
-            // Usamos Fetch API para enviar la imagen al servidor
+            ctx.putImageData(imgData, 0, 0);
+
+            const imageData = canvas.toDataURL('image/png');
+
             fetch('/predict', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ image: image })
+                body: JSON.stringify({ image: imageData })
             })
             .then(response => response.json())
             .then(data => {
-                alert(`Predicción: ${data.prediction}`);
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `Predicción: ${data.prediction}`;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                document.getElementById('submitButton').focus();
             });
-        }
+        });
+
+        // Limpiar el canvas al cargar la página
+        window.onload = () => {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
     </script>
 </body>
 </html>
